@@ -431,6 +431,19 @@
     }
   });
 
+  // 曲名欄を空にしたら検索結果を消す（検索中なら結果を捨てる）
+  function clearResults() {
+    searchSeq++;
+    results = [];
+    $('results').hidden = true;
+    $('result-list').innerHTML = '';
+    $('results-note').textContent = '';
+    $('search-btn').disabled = false;
+  }
+  $('q-title').addEventListener('input', () => {
+    if (!$('q-title').value.trim()) clearResults();
+  });
+
   $('result-list').addEventListener('click', (e) => {
     const btn = e.target.closest('.song-open');
     if (!btn) return;
