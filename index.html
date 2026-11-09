@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>中国語KTV</title>
+  <meta name="description" content="中国語の曲名から歌詞を探して、ピンイン付きで表示します。">
+  <meta name="theme-color" content="#f6f4fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16141f" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="中国語KTV">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="home" class="view">
+    <header class="app-header">
+      <h1>中国語KTV</h1>
+      <p class="sub">曲名で歌詞を探して、ピンイン付きで表示します</p>
+    </header>
+
+    <form id="search-form" class="card" autocomplete="off">
+      <label class="field">
+        <span class="label">曲名</span>
+        <input id="q-title" name="title" type="search" enterkeyhint="search" lang="zh-CN"
+               placeholder="例：月亮代表我的心、告白気球" required>
+      </label>
+      <label class="field">
+        <span class="label">歌手名 <small>（任意・候補が多いとき）</small></span>
+        <input id="q-artist" name="artist" type="search" enterkeyhint="search" lang="zh-CN"
+               placeholder="例：周杰伦">
+      </label>
+      <button type="submit" class="btn primary" id="search-btn">歌詞を検索</button>
+      <p class="note">日本の漢字で入力しても、簡体字に直して検索します。</p>
+    </form>
+
+    <section id="results" class="list-section" hidden aria-live="polite">
+      <h2 id="results-title">検索結果</h2>
+      <p id="results-note" class="note"></p>
+      <ul id="result-list" class="song-list"></ul>
+    </section>
+
+    <section id="saved" class="list-section">
+      <h2>保存した曲</h2>
+      <p class="note">開いた曲は自動で保存され、電波がなくても開けます。</p>
+      <ul id="saved-list" class="song-list"></ul>
+      <p id="saved-empty" class="empty">まだありません。</p>
+    </section>
+
+    <details class="card paste">
+      <summary>見つからない曲は歌詞を貼り付けて表示</summary>
+      <form id="paste-form" autocomplete="off">
+        <label class="field">
+          <span class="label">曲名</span>
+          <input id="p-title" type="text" lang="zh-CN" placeholder="あとで探しやすい名前">
+        </label>
+        <label class="field">
+          <span class="label">歌詞</span>
+          <textarea id="p-lyrics" rows="8" lang="zh-CN" placeholder="中国語の歌詞を貼り付け" required></textarea>
+        </label>
+        <button type="submit" class="btn">ピンイン付きで表示</button>
+      </form>
+    </details>
+
+    <footer class="app-footer">
+      歌詞データ：<a href="https://lrclib.net/" target="_blank" rel="noopener">LRCLIB</a>（有志による歌詞データベース）<br>
+      ピンイン変換：<a href="https://github.com/zh-lx/pinyin-pro" target="_blank" rel="noopener">pinyin-pro</a>
+    </footer>
+  </main>
+
+  <main id="song" class="view" hidden>
+    <header class="song-bar">
+      <a href="#/" class="back" aria-label="戻る">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <div class="song-meta">
+        <h1 id="song-title"></h1>
+        <p id="song-artist"></p>
+      </div>
+    </header>
+    <div class="toolbar" role="toolbar" aria-label="表示の設定">
+      <button type="button" id="font-down" class="tool" aria-label="文字を小さく">A<small>−</small></button>
+      <button type="button" id="font-up" class="tool" aria-label="文字を大きく">A<small>＋</small></button>
+      <button type="button" id="tone-toggle" class="tool toggle" aria-pressed="false">声調色</button>
+      <button type="button" id="simp-toggle" class="tool toggle" aria-pressed="false">簡体字</button>
+    </div>
+    <article id="lyrics" class="lyrics"></article>
+    <p class="hint">読みが違う字はタップすると切り替わります（多音字）</p>
+    <p id="song-source" class="app-footer"></p>
+  </main>
+
+  <script src="vendor/pinyin-pro.js"></script>
+  <script src="vendor/hanzi-map.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

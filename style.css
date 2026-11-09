@@ -1,0 +1,376 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f4fa;
+  --surface: #ffffff;
+  --surface-2: #efecf6;
+  --text: #1d1a29;
+  --muted: #6b6680;
+  --line: #dcd7e8;
+  --accent: #c2185b;
+  --accent-soft: #fbe3ee;
+  --accent-text: #ffffff;
+  --pinyin: #57516e;
+  --edited: #c2185b;
+  --tone1: #d32f2f;
+  --tone2: #e07800;
+  --tone3: #2e7d32;
+  --tone4: #1565c0;
+  --tone5: #8a8599;
+  --radius: 14px;
+  --lyric-scale: 1;
+  --lyric-size: calc(1.75rem * var(--lyric-scale));
+  --font-ui: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+  --font-zh-hans: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+  --font-zh-hant: "PingFang TC", "Noto Sans TC", "Noto Sans CJK TC", "Source Han Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-pinyin: "Helvetica Neue", Helvetica, Arial, "Noto Sans", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16141f;
+    --surface: #211e2d;
+    --surface-2: #2b2739;
+    --text: #f1eef8;
+    --muted: #a39db6;
+    --line: #3a3549;
+    --accent: #ff5c9a;
+    --accent-soft: #3d2030;
+    --accent-text: #1a0d14;
+    --pinyin: #c9c2dd;
+    --edited: #ff8ab8;
+    --tone1: #ff7070;
+    --tone2: #ffb347;
+    --tone3: #6fd47a;
+    --tone4: #6fb2ff;
+    --tone5: #a39db6;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16141f;
+  --surface: #211e2d;
+  --surface-2: #2b2739;
+  --text: #f1eef8;
+  --muted: #a39db6;
+  --line: #3a3549;
+  --accent: #ff5c9a;
+  --accent-soft: #3d2030;
+  --accent-text: #1a0d14;
+  --pinyin: #c9c2dd;
+  --edited: #ff8ab8;
+  --tone1: #ff7070;
+  --tone2: #ffb347;
+  --tone3: #6fd47a;
+  --tone4: #6fb2ff;
+  --tone5: #a39db6;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] { display: none !important; }
+
+a { color: var(--accent); }
+
+:lang(zh), :lang(zh-CN), :lang(zh-Hans) { font-family: var(--font-zh-hans); }
+:lang(zh-Hant) { font-family: var(--font-zh-hant); }
+
+.view {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 16px calc(32px + env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+/* ---------- ホーム ---------- */
+.app-header {
+  padding: calc(28px + env(safe-area-inset-top)) 4px 16px;
+}
+.app-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+}
+.app-header .sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.field { display: block; margin-bottom: 14px; }
+.field .label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.field small { font-weight: 400; }
+
+input, textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 1.05rem; /* 16px 以上で iPhone のズームを防ぐ */
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 12px 14px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+textarea { resize: vertical; min-height: 10rem; line-height: 1.7; }
+input:focus, textarea:focus { border-color: var(--accent); background: var(--surface); }
+
+.btn {
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.btn:disabled { opacity: 0.6; }
+.btn:active { transform: translateY(1px); }
+
+.note {
+  margin: 10px 2px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.note:empty { display: none; }
+
+.list-section { margin-top: 28px; }
+.list-section h2 {
+  font-size: 1.05rem;
+  margin: 0 4px;
+}
+.list-section > .note { margin: 2px 4px 10px; }
+
+.song-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.song-list:empty { display: none; }
+.song-item {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--line);
+}
+.song-item:first-child { border-top: 0; }
+.song-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.song-open:active { background: var(--surface-2); }
+.song-name { font-weight: 700; font-size: 1.05rem; }
+.song-sub, .song-preview {
+  font-size: 0.85rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.song-preview { color: var(--pinyin); }
+.song-remove {
+  flex: none;
+  width: 48px;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--line);
+  cursor: pointer;
+}
+.loading { padding: 14px 16px; color: var(--muted); }
+.empty { margin: 8px 4px; color: var(--muted); font-size: 0.9rem; }
+
+.paste { margin-top: 28px; padding: 0; }
+.paste summary {
+  padding: 14px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.paste form { padding: 0 16px 16px; }
+
+.app-footer {
+  margin: 28px 4px 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ---------- 歌詞 ---------- */
+.song-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 -16px;
+  padding: calc(8px + env(safe-area-inset-top)) 16px 8px 6px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.back {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text);
+  border-radius: 50%;
+}
+.back:active { background: var(--surface-2); }
+.song-meta { min-width: 0; }
+.song-meta h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.song-meta p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0 4px;
+}
+.tool {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-width: 44px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.tool small { font-size: 0.8em; margin-left: 1px; }
+.tool.toggle[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lyrics {
+  padding: 8px 0 8px;
+}
+.line {
+  margin: 0 0 0.7em;
+  line-height: 1;
+  word-spacing: 0.5em;
+  font-size: var(--lyric-size);
+}
+.line.gap { height: 0.4em; margin: 0; }
+
+.u {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: bottom;
+  word-spacing: normal;
+  margin: 0 0.03em 0.15em;
+}
+.grp { display: inline-flex; align-items: flex-end; vertical-align: bottom; word-spacing: normal; }
+.u .py {
+  font-family: var(--font-pinyin);
+  font-size: 0.5em;
+  line-height: 1.3;
+  color: var(--pinyin);
+  white-space: nowrap;
+  padding: 0 0.08em;
+}
+.u .hz {
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.u.zh { cursor: pointer; border-radius: 6px; }
+.u.zh:active { background: var(--surface-2); }
+.u.edited .py {
+  color: var(--edited);
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.tone-color .t1 .py { color: var(--tone1); }
+.tone-color .t2 .py { color: var(--tone2); }
+.tone-color .t3 .py { color: var(--tone3); }
+.tone-color .t4 .py { color: var(--tone4); }
+.tone-color .t5 .py { color: var(--tone5); }
+.tone-color .u.edited .py { text-decoration-color: var(--edited); }
+
+.u.nope { animation: nope 0.25s ease; }
+@keyframes nope {
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+.hint {
+  margin: 24px 4px 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
