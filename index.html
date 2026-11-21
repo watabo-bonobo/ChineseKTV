@@ -14,7 +14,9 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css">
+  <!-- ?v= は古い版から切り替えるときに、ブラウザのメモリに残った古いファイルを使わせないため。
+       以後の更新は sw.js が毎回サーバーに確認するので、変えなくても新しいファイルになります。 -->
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
   <main id="home" class="view">
@@ -96,6 +98,6 @@
 
   <script src="vendor/pinyin-pro.js"></script>
   <script src="vendor/hanzi-map.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>
