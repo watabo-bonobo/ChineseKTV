@@ -85,11 +85,12 @@
     <div class="toolbar" role="toolbar" aria-label="表示の設定">
       <button type="button" id="font-down" class="tool" aria-label="文字を小さく">A<small>−</small></button>
       <button type="button" id="font-up" class="tool" aria-label="文字を大きく">A<small>＋</small></button>
+      <button type="button" id="pinyin-toggle" class="tool toggle" aria-pressed="true">ピンイン</button>
       <button type="button" id="tone-toggle" class="tool toggle" aria-pressed="false">声調色</button>
       <button type="button" id="simp-toggle" class="tool toggle" aria-pressed="false">簡体字</button>
     </div>
     <article id="lyrics" class="lyrics"></article>
-    <p class="hint">読みが違う字はタップすると切り替わります（多音字）</p>
+    <p id="lyrics-hint" class="hint">読みが違う字はタップすると切り替わります（多音字）</p>
     <p id="song-source" class="app-footer"></p>
   </main>
 
