@@ -363,6 +363,22 @@ input:focus, textarea:focus { border-color: var(--accent); background: var(--sur
 .tone-color .t5 .py { color: var(--tone5); }
 .tone-color .u.edited .py { text-decoration-color: var(--edited); }
 
+/* ピンインを隠す
+   字の間隔はふつうの文章と同じに詰め、ピンインの高さ（0.5em × 1.3）だけ上に残すので、
+   切り替えても行の位置は上下にずれない。タップした字のピンインは字の真上に浮かせて出す。 */
+.hide-pinyin .u { position: relative; padding-top: 0.65em; }
+.hide-pinyin .u .py {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  visibility: hidden;
+}
+.hide-pinyin .u.peek .py { visibility: visible; }
+.hide-pinyin .u.peek .hz { background: var(--surface-2); border-radius: 6px; }
+/* 行末の字の長いピンインが画面からはみ出しても横スクロールさせない（sticky は効いたまま） */
+#song { overflow-x: clip; }
+
 .u.nope { animation: nope 0.25s ease; }
 @keyframes nope {
   25% { transform: translateX(-2px); }

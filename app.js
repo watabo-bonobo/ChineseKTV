@@ -68,7 +68,10 @@
 
   let songs = store.get('ktv.songs', []);
   if (!Array.isArray(songs)) songs = [];
-  const prefs = Object.assign({ fontScale: 1, toneColor: false, simplified: false }, store.get('ktv.prefs', {}));
+  const prefs = Object.assign(
+    { fontScale: 1, toneColor: false, simplified: false, showPinyin: true },
+    store.get('ktv.prefs', {}),
+  );
   const saveSongs = () => store.set('ktv.songs', songs);
   const savePrefs = () => store.set('ktv.prefs', prefs);
 
@@ -128,11 +131,13 @@
   const isPunct = (s) => /^[\p{P}\p{S}]+$/u.test(s);
   const isOpening = (s) => /^[\p{Ps}\p{Pi}]/u.test(s);
 
-  let current = null; // { song, lines }
+  let current = null; // { song, lines, peek }
 
   function overrideKey(lineText, i) {
     return `${i}@${lineText}`;
   }
+  // ピンインを隠しているときに、タップして一時的に見せている字（行番号:文字位置）
+  const peekKey = (l, i) => `${l}:${i}`;
 
   function renderLine(line, l) {
     const { song } = current;
@@ -155,8 +160,9 @@
       if (t.kind === 'zh') {
         const py = song.overrides[overrideKey(line.text, t.i)] || t.cell.auto;
         const edited = py !== t.cell.auto ? ' edited' : '';
+        const peek = !prefs.showPinyin && current.peek.has(peekKey(l, t.i)) ? ' peek' : '';
         const hz = prefs.simplified ? t.cell.simp : t.cell.ch;
-        return `<span class="u zh t${toneOf(py)}${edited}" data-i="${t.i}"><span class="py">${esc(py)}</span><span class="hz">${esc(hz)}</span></span>`;
+        return `<span class="u zh t${toneOf(py)}${edited}${peek}" data-i="${t.i}"><span class="py">${esc(py)}</span><span class="hz">${esc(hz)}</span></span>`;
       }
       return `<span class="u tx"><span class="py">&nbsp;</span><span class="hz">${esc(t.text)}</span></span>`;
     };
@@ -203,7 +209,12 @@
     el.innerHTML = html || '<p class="empty">歌詞がありません。</p>';
     el.lang = prefs.simplified || !hasTraditional(current.song.lyrics) ? 'zh-Hans' : 'zh-Hant';
     el.classList.toggle('tone-color', prefs.toneColor);
+    el.classList.toggle('hide-pinyin', !prefs.showPinyin);
     document.documentElement.style.setProperty('--lyric-scale', prefs.fontScale);
+    $('pinyin-toggle').setAttribute('aria-pressed', String(prefs.showPinyin));
+    $('lyrics-hint').textContent = prefs.showPinyin
+      ? '読みが違う字はタップすると切り替わります（多音字）'
+      : '読めない字はタップするとピンインが見えます（もう一度タップで隠す）';
     $('tone-toggle').setAttribute('aria-pressed', String(prefs.toneColor));
     $('simp-toggle').setAttribute('aria-pressed', String(prefs.simplified));
     const title = current.song.title || '（無題）';
@@ -218,7 +229,7 @@
       return;
     }
     song.overrides = song.overrides || {};
-    current = { song, lines: cleanLyrics(song.lyrics).map(analyzeLine) };
+    current = { song, lines: cleanLyrics(song.lyrics).map(analyzeLine), peek: new Set() };
     $('song-artist').textContent = [song.artist, song.album].filter(Boolean).join(' · ');
     $('song-source').innerHTML =
       song.source === 'lrclib'
@@ -235,6 +246,14 @@
     if (!u || !lineEl || !current) return;
     const line = current.lines[Number(lineEl.dataset.l)];
     const i = Number(u.dataset.i);
+    if (!prefs.showPinyin) {
+      // 練習中：その字のピンインだけ見せる／隠す（読みは変えない）
+      const key = peekKey(lineEl.dataset.l, i);
+      if (current.peek.has(key)) current.peek.delete(key);
+      else current.peek.add(key);
+      u.classList.toggle('peek', current.peek.has(key));
+      return;
+    }
     const cell = line.cells[i];
     const cands = [...new Set([cell.auto, ...cell.alts])];
     if (cands.length < 2) {
@@ -259,6 +278,12 @@
   });
   $('font-up').addEventListener('click', () => {
     prefs.fontScale = Math.min(2.4, Math.round((prefs.fontScale + 0.1) * 10) / 10);
+    savePrefs();
+    renderLyrics();
+  });
+  $('pinyin-toggle').addEventListener('click', () => {
+    prefs.showPinyin = !prefs.showPinyin;
+    if (current) current.peek.clear(); // 隠し直したときは全部隠れた状態から
     savePrefs();
     renderLyrics();
   });
