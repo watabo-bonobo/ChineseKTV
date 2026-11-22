@@ -138,6 +138,9 @@
   }
   // ピンインを隠しているときに、タップして一時的に見せている字（行番号:文字位置）
   const peekKey = (l, i) => `${l}:${i}`;
+  // ピンインを隠しているか。電波が弱くて古い index.html（ボタンが無い）が出たときは、
+  // 戻すボタンが無くなるので常に表示にする
+  const pinyinHidden = () => !prefs.showPinyin && !!$('pinyin-toggle');
 
   function renderLine(line, l) {
     const { song } = current;
@@ -160,7 +163,7 @@
       if (t.kind === 'zh') {
         const py = song.overrides[overrideKey(line.text, t.i)] || t.cell.auto;
         const edited = py !== t.cell.auto ? ' edited' : '';
-        const peek = !prefs.showPinyin && current.peek.has(peekKey(l, t.i)) ? ' peek' : '';
+        const peek = pinyinHidden() && current.peek.has(peekKey(l, t.i)) ? ' peek' : '';
         const hz = prefs.simplified ? t.cell.simp : t.cell.ch;
         return `<span class="u zh t${toneOf(py)}${edited}${peek}" data-i="${t.i}"><span class="py">${esc(py)}</span><span class="hz">${esc(hz)}</span></span>`;
       }
@@ -209,12 +212,14 @@
     el.innerHTML = html || '<p class="empty">歌詞がありません。</p>';
     el.lang = prefs.simplified || !hasTraditional(current.song.lyrics) ? 'zh-Hans' : 'zh-Hant';
     el.classList.toggle('tone-color', prefs.toneColor);
-    el.classList.toggle('hide-pinyin', !prefs.showPinyin);
+    el.classList.toggle('hide-pinyin', pinyinHidden());
     document.documentElement.style.setProperty('--lyric-scale', prefs.fontScale);
-    $('pinyin-toggle').setAttribute('aria-pressed', String(prefs.showPinyin));
-    $('lyrics-hint').textContent = prefs.showPinyin
-      ? '読みが違う字はタップすると切り替わります（多音字）'
-      : '読めない字はタップするとピンインが見えます（もう一度タップで隠す）';
+    if ($('pinyin-toggle')) $('pinyin-toggle').setAttribute('aria-pressed', String(!pinyinHidden()));
+    if ($('lyrics-hint')) {
+      $('lyrics-hint').textContent = pinyinHidden()
+        ? '読めない字はタップするとピンインが見えます（もう一度タップで隠す）'
+        : '読みが違う字はタップすると切り替わります（多音字）';
+    }
     $('tone-toggle').setAttribute('aria-pressed', String(prefs.toneColor));
     $('simp-toggle').setAttribute('aria-pressed', String(prefs.simplified));
     const title = current.song.title || '（無題）';
@@ -246,7 +251,7 @@
     if (!u || !lineEl || !current) return;
     const line = current.lines[Number(lineEl.dataset.l)];
     const i = Number(u.dataset.i);
-    if (!prefs.showPinyin) {
+    if (pinyinHidden()) {
       // 練習中：その字のピンインだけ見せる／隠す（読みは変えない）
       const key = peekKey(lineEl.dataset.l, i);
       if (current.peek.has(key)) current.peek.delete(key);
@@ -281,12 +286,15 @@
     savePrefs();
     renderLyrics();
   });
-  $('pinyin-toggle').addEventListener('click', () => {
-    prefs.showPinyin = !prefs.showPinyin;
-    if (current) current.peek.clear(); // 隠し直したときは全部隠れた状態から
-    savePrefs();
-    renderLyrics();
-  });
+  // 古い index.html と混ざったときにボタンが無くても、ほかの機能は止めない
+  if ($('pinyin-toggle')) {
+    $('pinyin-toggle').addEventListener('click', () => {
+      prefs.showPinyin = !prefs.showPinyin;
+      if (current) current.peek.clear(); // 隠し直したときは全部隠れた状態から
+      savePrefs();
+      renderLyrics();
+    });
+  }
   $('tone-toggle').addEventListener('click', () => {
     prefs.toneColor = !prefs.toneColor;
     savePrefs();
